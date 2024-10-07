@@ -39,15 +39,15 @@ class TOTP:
         code = self._generate_code(hmac)
         return code
 
+    def _generate_base32_secret(self, secret: str) -> bytes:
+        padding = (8 - len(secret)) % 8
+        return b32decode(secret.upper() + "=" * padding)
+
     def _calculate_step(self, timestamp: float) -> bytes:
         STEP_BYTE_LENGTH = 8
         time_step = int(timestamp // self.__PERIOD)
         time_step_bytes = time_step.to_bytes(STEP_BYTE_LENGTH)
         return time_step_bytes
-
-    def _generate_base32_secret(self, secret: str) -> bytes:
-        padding = (8 - len(secret)) % 8
-        return b32decode(secret.upper() + "=" * padding)
 
     def _generate_hmac_sha1_value(self, secret: bytes, message: bytes) -> bytes:
         hmac = HMAC(
